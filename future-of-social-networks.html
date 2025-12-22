@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>An Introduction | dissocite</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; }
+    .page-wrapper { background-color: #fafafa; color: #ff6b6b; min-height: 100vh; transition: all 0.3s ease; }
+    .page-wrapper.dark-mode { background-color: #1a1a1a; color: #e0e0e0; }
+    .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+    .back-link { color: #ff6b6b; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .dark-mode .back-link { color: #e85555; }
+    
+    .theme-toggle { background: none; border: 1px solid #ff6b6b; color: #ff6b6b; padding: 4px 12px; font-family: inherit; font-size: 12px; cursor: pointer; }
+    .dark-mode .theme-toggle { border-color: #e85555; color: #e85555; }
+    
+    .hero-rectangle { 
+      width: 100%; 
+      height: 200px; 
+      background-color: #ff6b6b; 
+      margin-bottom: 40px; 
+      position: relative; 
+      overflow: hidden;
+    }
+    .hero-rectangle::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.25;
+      z-index: 3;
+      pointer-events: none;
+      animation: staticFlicker 0.05s steps(3) infinite;
+    }
+    .hero-rectangle::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.15) 0px,
+        rgba(0,0,0,0.15) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 4;
+      pointer-events: none;
+      animation: scanlines 4s linear infinite;
+    }
+    @keyframes staticFlicker {
+      0% { transform: translate(0, 0) scaleX(1); opacity: 0.25; }
+      25% { transform: translate(-2%, 1%) scaleX(1.01); opacity: 0.3; }
+      50% { transform: translate(1%, -2%) scaleX(0.99); opacity: 0.2; }
+      75% { transform: translate(-1%, -1%) scaleX(1.02); opacity: 0.35; }
+      100% { transform: translate(2%, 2%) scaleX(1); opacity: 0.25; }
+    }
+    @keyframes scanlines {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100px; }
+    }
+    @keyframes glitchColor {
+      0% { background-color: #ff6b6b; }
+      25% { background-color: #ff5a5a; }
+      50% { background-color: #ff7a7a; }
+      75% { background-color: #ee5a6f; }
+      100% { background-color: #ff6b6b; }
+    }
+    .hero-rectangle .glitch-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ff6b6b;
+      animation: glitchColor 10s ease-in-out infinite, glitchShift 10s ease-in-out infinite;
+    }
+    @keyframes glitchShift {
+      0% { transform: translate(0, 0); }
+      2% { transform: translate(-5px, 0); }
+      4% { transform: translate(5px, 0); }
+      6% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, -2px); }
+      27% { transform: translate(4px, 0); }
+      29% { transform: translate(-2px, -2px); }
+      50% { transform: translate(2px, 0); }
+      52% { transform: translate(2px, 5px); }
+      54% { transform: translate(2px, 0); }
+      75% { transform: translate(-1px, 2px); }
+      77% { transform: translate(6px, 2px); }
+      79% { transform: translate(-1px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
+    .dark-mode .hero-rectangle { background-color: #e85555; }
+    .dark-mode .hero-rectangle .glitch-layer { background-color: #e85555; }
+    
+    .article-header { margin-bottom: 40px; }
+    .article-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; line-height: 1.2; }
+    .article-meta { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    footer { margin-top: 80px; padding-top: 20px; border-top: 1px solid #ff6b6b; font-size: 12px; opacity: 0.7; }
+    .dark-mode footer { border-color: #e85555; }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper" id="pageWrapper">
+    <div class="container">
+      <header>
+        <a href="index.html" class="back-link">← Back</a>
+        <button class="theme-toggle" onclick="toggleTheme()">◐</button>
+      </header>
+      
+      <div class="hero-rectangle">
+        <div class="glitch-layer"></div>
+      </div>
+      
+      <article>
+        <div class="article-header">
+          <h1 class="article-title">An Introduction</h1>
+          <div class="article-meta">December 16 · 2025</div>
+        </div>
+      </article>
+      
+      <footer>
+        <div>thx for reading</div>
+      </footer>
+    </div>
+  </div>
+  
+  <script>
+    let darkMode = true;
+    
+    // Initialize dark mode on load
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('pageWrapper').classList.add('dark-mode');
+    });
+    
+    function toggleTheme() {
+      darkMode = !darkMode;
+      document.getElementById('pageWrapper').classList.toggle('dark-mode', darkMode);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writing | dissocite</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; }
+    .page-wrapper { background-color: #fafafa; color: #ff6b6b; min-height: 100vh; transition: all 0.3s ease; }
+    .page-wrapper.dark-mode { background-color: #1a1a1a; color: #e0e0e0; }
+    .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+    .back-link { color: #ff6b6b; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .dark-mode .back-link { color: #e85555; }
+    
+    .theme-toggle { background: none; border: 1px solid #ff6b6b; color: #ff6b6b; padding: 4px 12px; font-family: inherit; font-size: 12px; cursor: pointer; }
+    .dark-mode .theme-toggle { border-color: #e85555; color: #e85555; }
+    
+    .page-title { font-size: 32px; font-weight: 700; margin-bottom: 32px; }
+    
+    .search-box { margin-bottom: 24px; }
+    .search-box input { 
+      width: 100%; 
+      font-family: inherit; 
+      font-size: 13px; 
+      padding: 10px 12px; 
+      background-color: #fff5f5; 
+      border: 1px solid #ff6b6b; 
+      color: #ff6b6b; 
+    }
+    .search-box input::placeholder { color: #ff6b6b; opacity: 0.5; }
+    .dark-mode .search-box input { 
+      background-color: #3d2318; 
+      border-color: #e85555; 
+      color: #e85555; 
+    }
+    .dark-mode .search-box input::placeholder { color: #e85555; }
+    
+    .filter-controls { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; align-items: center; }
+    .filter-btn { 
+      font-family: inherit; 
+      font-size: 11px; 
+      text-transform: uppercase; 
+      background: none; 
+      border: 1px solid #ff6b6b; 
+      color: #ff6b6b; 
+      padding: 6px 12px; 
+      cursor: pointer; 
+    }
+    .filter-btn.active { background-color: #ff6b6b; color: #fef6e4; }
+    .dark-mode .filter-btn { border-color: #e85555; color: #e85555; }
+    .dark-mode .filter-btn.active { background-color: #e85555; color: #1a1a1a; }
+    
+    .year-label { 
+      font-size: 12px; 
+      font-weight: 600; 
+      text-transform: uppercase; 
+      margin: 40px 0 16px; 
+      color: #ff6b6b; 
+    }
+    .dark-mode .year-label { color: #e85555; }
+    
+    .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    
+    .article-card { 
+      border: 1px solid #ff6b6b; 
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.2s ease;
+    }
+    .article-card:hover { transform: translateY(-2px); }
+    .dark-mode .article-card { border-color: #e85555; }
+    
+    .article-card-image { 
+      height: 120px; 
+      background-color: #ff6b6b; 
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .article-card-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.2;
+      z-index: 1;
+      pointer-events: none;
+      animation: staticFlicker 0.1s steps(3) infinite;
+    }
+    .article-card-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.1) 0px,
+        rgba(0,0,0,0.1) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 2;
+      pointer-events: none;
+    }
+    @keyframes staticFlicker {
+      0% { transform: translate(0, 0); opacity: 0.2; }
+      25% { transform: translate(-1%, 1%); opacity: 0.25; }
+      50% { transform: translate(1%, -1%); opacity: 0.15; }
+      75% { transform: translate(-1%, -1%); opacity: 0.3; }
+      100% { transform: translate(1%, 1%); opacity: 0.2; }
+    }
+    .dark-mode .article-card-image { background-color: #e85555; }
+    
+    .article-card-hero-text {
+      position: relative;
+      z-index: 5;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fef6e4;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 
+        1px 1px 0 #d94a4a,
+        -1px -1px 0 #f06565;
+      animation: cardTextGlitch 3s ease-in-out infinite;
+    }
+    .article-card-hero-text::before {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #fef6e4;
+      opacity: 0.8;
+      z-index: -1;
+      animation: cardTextGlitchBefore 3s ease-in-out infinite;
+    }
+    .article-card-hero-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #fef6e4;
+      opacity: 0.8;
+      z-index: -1;
+      animation: cardTextGlitchAfter 3s ease-in-out infinite;
+    }
+    @keyframes cardTextGlitch {
+      0%, 100% { transform: translate(0, 0) skew(0deg); }
+      2% { transform: translate(-2px, 0) skew(-1deg); }
+      4% { transform: translate(2px, 0) skew(1deg); }
+      6% { transform: translate(0, 0) skew(0deg); }
+      50% { transform: translate(0, 0) skew(0deg); }
+      52% { transform: translate(1px, -1px) skew(0.5deg); }
+      54% { transform: translate(-1px, 1px) skew(-0.5deg); }
+      56% { transform: translate(0, 0) skew(0deg); }
+    }
+    @keyframes cardTextGlitchBefore {
+      0%, 100% { transform: translate(0, 0); }
+      2% { transform: translate(-3px, -1px); color: #ff9999; }
+      4% { transform: translate(3px, 1px); color: #ff6666; }
+      6% { transform: translate(0, 0); }
+      50% { transform: translate(0, 0); }
+      52% { transform: translate(2px, 1px); color: #ffaaaa; }
+      54% { transform: translate(-2px, -1px); }
+      56% { transform: translate(0, 0); }
+    }
+    @keyframes cardTextGlitchAfter {
+      0%, 100% { transform: translate(0, 0); }
+      2% { transform: translate(3px, 1px); color: #cc4444; }
+      4% { transform: translate(-3px, -1px); color: #aa3333; }
+      6% { transform: translate(0, 0); }
+      50% { transform: translate(0, 0); }
+      52% { transform: translate(-2px, -1px); color: #bb4444; }
+      54% { transform: translate(2px, 1px); }
+      56% { transform: translate(0, 0); }
+    }
+    .dark-mode .article-card-hero-text { color: #1a1a1a; text-shadow: 1px 1px 0 #d4b08c, -1px -1px 0 #f0d4b8; }
+    .dark-mode .article-card-hero-text::before, .dark-mode .article-card-hero-text::after { color: #1a1a1a; }
+    
+    .article-card-content { padding: 16px; }
+    .article-card-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #ff6b6b; }
+    .dark-mode .article-card-title { color: #e85555; }
+    .article-card-meta { font-size: 11px; text-transform: uppercase; opacity: 0.6; color: #ff6b6b; }
+    .dark-mode .article-card-meta { color: #e85555; }
+    .article-card-tag { 
+      display: inline-block;
+      font-size: 9px; 
+      text-transform: uppercase; 
+      padding: 2px 6px; 
+      border: 1px solid #ff6b6b;
+      color: #ff6b6b;
+      margin-top: 8px;
+    }
+    .dark-mode .article-card-tag { border-color: #e85555; color: #e85555; }
+    
+    .no-results { padding: 40px; text-align: center; opacity: 0.6; }
+    
+    footer { margin-top: 80px; padding-top: 20px; border-top: 1px solid #ff6b6b; font-size: 12px; opacity: 0.7; display: flex; justify-content: space-between; }
+    footer a { color: #ff6b6b; }
+    .dark-mode footer { border-color: #e85555; color: #e85555; }
+    .dark-mode footer a { color: #e85555; }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper" id="pageWrapper">
+    <div class="container">
+      <header>
+        <a href="index.html" class="back-link">← Back</a>
+        <button class="theme-toggle" onclick="toggleTheme()">◐</button>
+      </header>
+      
+      <h1 class="page-title">Writing</h1>
+      
+      <div class="search-box">
+        <input type="text" placeholder="Search articles..." id="articleSearch" oninput="renderArticles()">
+      </div>
+      
+      <div class="filter-controls">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+        <button class="filter-btn" data-filter="personal" onclick="setFilter('personal')">Personal</button>
+        <button class="filter-btn" data-filter="neuroscience" onclick="setFilter('neuroscience')">Neuroscience</button>
+        <button class="filter-btn" data-filter="tech" onclick="setFilter('tech')">Tech</button>
+      </div>
+      
+      <div id="articles-container"></div>
+      
+      <footer>
+        <div>thx for reading</div>
+        <a href="https://x.com/lukaskires">Twitter/X</a>
+      </footer>
+    </div>
+  </div>
+  
+  <script>
+    let darkMode = true;
+    let activeFilter = 'all';
+    
+    // Initialize dark mode on load
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('pageWrapper').classList.add('dark-mode');
+    });
+    
+    const articles = {
+      "2025": [
+        { 
+          title: "Words, Things, and Ideas of the Month - December 2025", 
+          date: "December 21", 
+          tag: "personal",
+          url: "words-things-ideas-december-2025.html",
+          heroText: "WTI DEC 2025"
+        },
+        { 
+          title: "An Introduction", 
+          date: "December 16", 
+          tag: "personal",
+          url: "future-of-social-networks.html",
+          heroText: ""
+        }
+      ]
+    };
+    
+    function toggleTheme() {
+      darkMode = !darkMode;
+      document.getElementById('pageWrapper').classList.toggle('dark-mode', darkMode);
+    }
+    
+    function setFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+      renderArticles();
+    }
+    
+    function renderArticles() {
+      const container = document.getElementById('articles-container');
+      const searchTerm = document.getElementById('articleSearch').value.toLowerCase();
+      let html = '';
+      let hasResults = false;
+      
+      Object.keys(articles).sort((a, b) => b - a).forEach(year => {
+        let filtered = articles[year];
+        
+        // Apply tag filter
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter(a => a.tag === activeFilter);
+        }
+        
+        // Apply search filter
+        if (searchTerm) {
+          filtered = filtered.filter(a => 
+            a.title.toLowerCase().includes(searchTerm) ||
+            a.tag.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        if (filtered.length > 0) {
+          hasResults = true;
+          html += `<div class="year-label">${year}</div>`;
+          html += '<div class="articles-grid">';
+          filtered.forEach(article => {
+            const heroTextHtml = article.heroText 
+              ? `<span class="article-card-hero-text" data-text="${article.heroText}">${article.heroText}</span>` 
+              : '';
+            html += `
+              <a href="${article.url}" class="article-card">
+                <div class="article-card-image">${heroTextHtml}</div>
+                <div class="article-card-content">
+                  <div class="article-card-title">${article.title}</div>
+                  <div class="article-card-meta">${article.date} · ${year}</div>
+                  <div class="article-card-tag">${article.tag}</div>
+                </div>
+              </a>
+            `;
+          });
+          html += '</div>';
+        }
+      });
+      
+      if (!hasResults) {
+        html = '<div class="no-results">No articles found.</div>';
+      }
+      
+      container.innerHTML = html;
+    }
+    
+    // Initialize
+    renderArticles();
+  </script>
+</body>
+</html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Words, Things, and Ideas of the Month - December 2025 | dissocite</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; }
+    .page-wrapper { background-color: #fafafa; color: #c96a6a; min-height: 100vh; transition: all 0.3s ease; animation: fadeIn 0.6s ease-out; }
+    .page-wrapper.dark-mode { background-color: #1a1a1a; color: #e0e0e0; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .page-transition-out {
+      animation: fadeOut 0.3s ease-in forwards;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
+    .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+    .back-link { color: #e85555; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+    .dark-mode .back-link { color: #e85555; }
+    
+    .theme-toggle { background: none; border: 1px solid #e85555; color: #e85555; padding: 4px 12px; font-family: inherit; font-size: 12px; cursor: pointer; }
+    .dark-mode .theme-toggle { border-color: #e85555; color: #e85555; }
+    
+    .hero-rectangle { 
+      width: 100%; 
+      height: 280px; 
+      background-color: #1a1a1a;
+      background-image: url("https://i.imgur.com/ZlL5Ijc.jpeg");
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 40px; 
+      position: relative; 
+      overflow: hidden;
+    }
+    .hero-rectangle::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(26, 26, 26, 0.1) 0%,
+        rgba(26, 26, 26, 0.2) 100%
+      );
+      z-index: 1;
+    }
+    
+    /* Mobile responsive styles */
+    @media (max-width: 480px) {
+      .container { padding: 24px 16px; }
+      .hero-rectangle { height: 200px; margin-bottom: 24px; }
+      .hero-text { padding: 16px; }
+      .hero-text-top { 
+        font-size: 9px; 
+        letter-spacing: 2px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .hero-text-bottom { 
+        font-size: 20px; 
+        letter-spacing: 1px; 
+      }
+      .article-title { font-size: 24px; }
+      .article-intro { font-size: 14px; }
+      .wti-item { flex-direction: column; gap: 8px; }
+      .wti-number { min-width: auto; }
+      .wti-word { 
+        font-size: 16px; 
+        padding: 5px 12px;
+      }
+      .wti-image { max-width: 100%; }
+      .wti-paragraph { padding: 16px; }
+      .wti-paragraph p { font-size: 13px; }
+    }
+    
+    @media (max-width: 360px) {
+      .hero-text-top { 
+        font-size: 8px; 
+        gap: 6px;
+      }
+      .hero-text-bottom { 
+        font-size: 16px; 
+      }
+      .article-title { font-size: 20px; }
+    }
+    
+    .floating-word {
+      position: absolute;
+      font-size: 10px;
+      font-weight: 600;
+      color: #fef6e4;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.25;
+      z-index: 4;
+      animation: floatWord 8s ease-in-out infinite;
+    }
+    .dark-mode .floating-word { color: #1a1a1a; }
+    .floating-word:nth-child(2) { top: 15%; left: 8%; animation-delay: 0s; }
+    .floating-word:nth-child(3) { top: 70%; left: 12%; animation-delay: 1s; }
+    .floating-word:nth-child(4) { top: 25%; right: 10%; animation-delay: 2s; }
+    .floating-word:nth-child(5) { top: 65%; right: 8%; animation-delay: 3s; }
+    .floating-word:nth-child(6) { top: 40%; left: 5%; animation-delay: 4s; }
+    .floating-word:nth-child(7) { top: 50%; right: 5%; animation-delay: 5s; }
+    @keyframes floatWord {
+      0%, 100% { transform: translateY(0) rotate(-2deg); opacity: 0.25; }
+      50% { transform: translateY(-8px) rotate(2deg); opacity: 0.4; }
+    }
+    @keyframes staticFlicker {
+      0% { transform: translate(0, 0) scaleX(1); opacity: 0.25; }
+      25% { transform: translate(-2%, 1%) scaleX(1.01); opacity: 0.3; }
+      50% { transform: translate(1%, -2%) scaleX(0.99); opacity: 0.2; }
+      75% { transform: translate(-1%, -1%) scaleX(1.02); opacity: 0.35; }
+      100% { transform: translate(2%, 2%) scaleX(1); opacity: 0.25; }
+    }
+    @keyframes scanlines {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100px; }
+    }
+    @keyframes glitchColor {
+      0% { background-color: #e85555; }
+      25% { background-color: #d94a4a; }
+      50% { background-color: #f06565; }
+      75% { background-color: #cc4a5a; }
+      100% { background-color: #e85555; }
+    }
+    .hero-rectangle .glitch-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e85555;
+      animation: glitchColor 10s ease-in-out infinite, glitchShift 10s ease-in-out infinite;
+    }
+    @keyframes glitchShift {
+      0% { transform: translate(0, 0); }
+      2% { transform: translate(-5px, 0); }
+      4% { transform: translate(5px, 0); }
+      6% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, -2px); }
+      27% { transform: translate(4px, 0); }
+      29% { transform: translate(-2px, -2px); }
+      50% { transform: translate(2px, 0); }
+      52% { transform: translate(2px, 5px); }
+      54% { transform: translate(2px, 0); }
+      75% { transform: translate(-1px, 2px); }
+      77% { transform: translate(6px, 2px); }
+      79% { transform: translate(-1px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
+    .dark-mode .hero-rectangle { background-color: #e85555; }
+    .dark-mode .hero-rectangle .glitch-layer { background-color: #e85555; }
+    
+    .article-header { margin-bottom: 40px; }
+    .article-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; line-height: 1.2; color: #e85555; }
+    .dark-mode .article-title { color: #e85555; }
+    .article-meta { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    .article-content { font-size: 14px; line-height: 1.7; color: #333; }
+    .dark-mode .article-content { color: #e85555; }
+    .article-intro {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e85555;
+    }
+    .article-intro .drop-cap {
+      float: left;
+      font-size: 48px;
+      line-height: 0.8;
+      font-weight: 700;
+      color: #e85555;
+      margin-right: 8px;
+      margin-top: 4px;
+    }
+    .article-intro .small-caps {
+      font-variant: small-caps;
+      text-transform: lowercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .dark-mode .article-intro { color: #e0e0e0; border-color: #e85555; }
+    .dark-mode .article-intro .drop-cap { color: #e85555; }
+    .wti-image {
+      width: 100%;
+      max-width: 400px;
+      margin: 16px 0;
+      border: 1px solid #e85555;
+    }
+    .dark-mode .wti-image { border-color: #e85555; }
+    .wti-image-caption {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+      font-style: italic;
+    }
+    .dark-mode .wti-image-caption { color: #e85555; }
+    .wti-source {
+      font-size: 12px;
+      margin-top: 12px;
+    }
+    .wti-source a {
+      color: #e85555;
+      text-decoration: underline;
+    }
+    .dark-mode .wti-source a { color: #e85555; }
+    .wti-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px dashed #e85555;
+    }
+    .wti-item:last-child { border-bottom: none; }
+    .dark-mode .wti-item { border-color: #e85555; }
+    .wti-number {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e85555;
+      min-width: 24px;
+    }
+    .dark-mode .wti-number { color: #e85555; }
+    .wti-body p { margin-bottom: 8px; color: #333; }
+    .dark-mode .wti-body p { color: #e0e0e0; }
+    .wti-word {
+      font-size: 18px;
+      font-weight: 700;
+      color: #e85555;
+      margin-bottom: 12px;
+      display: block;
+      width: fit-content;
+      background-color: rgba(232, 85, 85, 0.1);
+      padding: 6px 14px;
+      border-left: 3px solid #e85555;
+    }
+    .dark-mode .wti-word { 
+      color: #e85555; 
+      background-color: rgba(232, 196, 160, 0.1);
+      border-left-color: #e85555;
+    }
+    .wti-tag {
+      display: inline-block;
+      font-size: 10px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border: 1px solid #e85555;
+      color: #e85555;
+      margin-bottom: 8px;
+    }
+    .dark-mode .wti-tag { border-color: #e85555; color: #e85555; }
+    .wti-meta {
+      font-size: 13px;
+      color: #555;
+    }
+    .dark-mode .wti-meta { color: #e0e0e0; }
+    .wti-example {
+      font-size: 13px;
+      color: #555;
+      padding-left: 16px;
+      border-left: 2px solid #e85555;
+    }
+    .dark-mode .wti-example { color: #e0e0e0; border-color: #e85555; }
+    .wti-highlight {
+      background-color: rgba(232, 85, 85, 0.15);
+      color: #e85555;
+      font-weight: 600;
+      padding: 1px 4px;
+      border-radius: 2px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .wti-highlight:hover {
+      background-color: rgba(232, 85, 85, 0.3);
+    }
+    .dark-mode .wti-highlight {
+      background-color: rgba(232, 85, 85, 0.2);
+      color: #e85555;
+    }
+    .dark-mode .wti-highlight:hover {
+      background-color: rgba(232, 85, 85, 0.4);
+    }
+    .wti-paragraph {
+      margin-top: 48px;
+      padding: 24px;
+      border: 1px solid #e85555;
+      background-color: rgba(232, 85, 85, 0.03);
+    }
+    .dark-mode .wti-paragraph {
+      border-color: #e85555;
+      background-color: rgba(232, 196, 160, 0.05);
+    }
+    .wti-paragraph-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #e85555;
+      margin-bottom: 16px;
+    }
+    .dark-mode .wti-paragraph-title { color: #e85555; }
+    .wti-paragraph p {
+      color: #333;
+      line-height: 1.8;
+    }
+    .dark-mode .wti-paragraph p { color: #e0e0e0; }
+    
+    footer { margin-top: 80px; padding-top: 20px; border-top: 1px solid #e85555; font-size: 12px; opacity: 0.7; }
+    .dark-mode footer { border-color: #e85555; }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper" id="pageWrapper">
+    <div class="container">
+      <header>
+        <a href="index.html" class="back-link" id="backLink">← Back</a>
+        <button class="theme-toggle" onclick="toggleTheme()">◐</button>
+      </header>
+      
+      <div class="hero-rectangle"></div>
+      
+      <article>
+        <div class="article-header">
+          <h1 class="article-title">Words, Things, and Ideas of the Month - December 2025</h1>
+          <div class="article-meta">December 21 · 2025</div>
+        </div>
+        
+        <div class="article-content">
+          <p class="article-intro"><span class="drop-cap">E</span><span class="small-caps">ach month I take note</span> of words, things, and ideas that caught my attention. Some I stumbled upon while reading, others emerged from conversations or late-night Wikipedia rabbit holes. Here's December: vocabulary worth knowing, historical curiosities, and mental models that help make sense of the world.</p>
+
+          <div class="wti-item" id="procession">
+            <div class="wti-number">1.</div>
+            <div class="wti-body">
+              <div class="wti-word">Procession</div>
+              <p>A group of people or vehicles moving forward in an orderly line, typically as part of a ceremony, festival, or formal occasion.</p>
+              <p class="wti-meta"><strong>Synonyms:</strong> parade, march, cortege</p>
+              <p class="wti-example"><em>The funeral procession wound slowly through the city streets on its way to the cemetery.</em></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="unnerve">
+            <div class="wti-number">2.</div>
+            <div class="wti-body">
+              <div class="wti-word">Unnerve</div>
+              <p>To cause someone to lose courage, confidence, or composure.</p>
+              <p class="wti-meta"><strong>Synonyms:</strong> demoralize, rattle, disconcert</p>
+              <p class="wti-example"><em>The soldiers were unnerved by the enemy's overwhelming show of force.</em></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="rubicon">
+            <div class="wti-number">3.</div>
+            <div class="wti-body">
+              <div class="wti-tag">Idea</div>
+              <div class="wti-word">"Crossing the Rubicon"</div>
+              <p>A phrase meaning to pass a point of no return — making an irreversible decision or taking a decisive action from which there's no turning back. It originates from Julius Caesar's fateful choice in 49 BC to cross Italy's Rubicon River with his army, defying the Senate and sparking a civil war.</p>
+              <img src="https://i.imgur.com/29PxeHw.jpeg" alt="Caesar crossing the Rubicon" class="wti-image">
+              <p class="wti-image-caption">Caesar crossing the Rubicon, 19th century illustration</p>
+              <p class="wti-example"><em>When the couple decided to open their relationship, they knew they had crossed the Rubicon.</em></p>
+              <p class="wti-source">Source: <a href="https://en.wikipedia.org/wiki/Crossing_the_Rubicon" target="_blank">Wikipedia</a></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="insulin-coma">
+            <div class="wti-number">4.</div>
+            <div class="wti-body">
+              <div class="wti-tag">Thing</div>
+              <div class="wti-word">Insulin Coma Therapy</div>
+              <p>This was a form of psychiatric treatment (1930s to 1960s) in which patients were repeatedly injected with large doses of insulin in order to induce daily hypoglycemic comas to "reset" the brain over weeks. It was mainly used for schizophrenia. The treatment was eventually discredited and abandoned after studies showed it had no real therapeutic value, though it remained in use in some countries until the late 1980s.</p>
+              <img src="https://i.imgur.com/Wz4bApX.jpeg" alt="Insulin coma therapy" class="wti-image">
+              <p class="wti-image-caption">Dr. Manfred Sakel, who introduced insulin coma therapy in 1927</p>
+              <p class="wti-meta"><strong>In popular culture:</strong> mentioned in Sylvia Plath's "The Bell Jar"; depicted in the film "A Beautiful Mind" (John Nash received this treatment)</p>
+              <p class="wti-source">Source: <a href="https://en.wikipedia.org/wiki/Insulin_shock_therapy" target="_blank">Wikipedia</a> · <a href="https://www.britannica.com/science/insulin-shock-therapy" target="_blank">Britannica</a></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="boiling-frog">
+            <div class="wti-number">5.</div>
+            <div class="wti-body">
+              <div class="wti-tag">Idea</div>
+              <div class="wti-word">Boiling Frog Effect</div>
+              <p>A metaphor for how people fail to recognize threats that build gradually. Drop a frog in boiling water, and it jumps out immediately. But place it in lukewarm water and slowly raise the temperature, and it won't notice the danger until it's too late.</p>
+              <p class="wti-meta"><strong>Note:</strong> The biology is actually a myth — real frogs will jump out as water heats up. But the metaphor endures because it captures how we normalize slow, incremental change.</p>
+              <p class="wti-source">Source: <a href="https://en.wikipedia.org/wiki/Boiling_frog" target="_blank">Wikipedia</a></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="surreptitious">
+            <div class="wti-number">6.</div>
+            <div class="wti-body">
+              <div class="wti-word">Surreptitious</div>
+              <p>Done in secret, especially because it would not be approved of if discovered.</p>
+              <p class="wti-meta"><strong>Synonyms:</strong> covert, stealthy, clandestine</p>
+              <p class="wti-example"><em>The athlete's surreptitious use of performance-enhancing drugs went undetected for years.</em></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="custodian">
+            <div class="wti-number">7.</div>
+            <div class="wti-body">
+              <div class="wti-word">Custodian</div>
+              <p>A person who has responsibility for taking care of or protecting something or someone.</p>
+              <p class="wti-meta"><strong>Synonyms:</strong> guardian, keeper, caretaker</p>
+              <p class="wti-example"><em>The museum's custodian had protected the ancient artifacts for over thirty years.</em></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="neophyte">
+            <div class="wti-number">8.</div>
+            <div class="wti-body">
+              <div class="wti-word">Neophyte</div>
+              <p>A person who is new to a subject, skill, or belief; a beginner.</p>
+              <p class="wti-meta"><strong>Synonyms:</strong> novice, beginner, newcomer</p>
+              <p class="wti-example"><em>Coordinating both hands while playing piano can be daunting for neophytes.</em></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="convalesce">
+            <div class="wti-number">9.</div>
+            <div class="wti-body">
+              <div class="wti-word">Convalesce</div>
+              <p>To gradually recover health and strength after illness or injury.</p>
+              <p class="wti-meta"><strong>Synonyms:</strong> recuperate, recover, heal</p>
+              <p class="wti-example"><em>After a severe bout of bronchitis, I spent two weeks convalescing at home.</em></p>
+            </div>
+          </div>
+
+          <div class="wti-item" id="streisand">
+            <div class="wti-number">10.</div>
+            <div class="wti-body">
+              <div class="wti-tag">Idea</div>
+              <div class="wti-word">Streisand Effect</div>
+              <p>When an attempt to hide, censor, or suppress information backfires, inadvertently drawing far more attention to it than it would have received otherwise.</p>
+              <img src="https://i.imgur.com/Fy8w03c.jpeg" alt="Streisand Estate aerial photo" class="wti-image">
+              <p class="wti-image-caption">The photo that started it all. Before the lawsuit: 6 downloads. After: over 420,000.</p>
+              <p class="wti-meta"><strong>Origin:</strong> In 2003, Barbra Streisand sued a photographer for $50 million to remove an aerial photo of her house from a coastal erosion database. The lawsuit turned an obscure image into front-page news.</p>
+              <p class="wti-source">Source: <a href="https://en.wikipedia.org/wiki/Streisand_effect" target="_blank">Wikipedia</a> · <a href="https://www.britannica.com/topic/Streisand-effect" target="_blank">Britannica</a></p>
+            </div>
+          </div>
+
+          <div class="wti-paragraph">
+            <div class="wti-paragraph-title">All Together Now</div>
+            <p>The <a href="#procession" class="wti-highlight">procession</a> of whistleblowers walking toward the courthouse <a href="#unnerve" class="wti-highlight">unnerved</a> the corporation's executives. They knew they had <a href="#rubicon" class="wti-highlight">crossed the Rubicon</a> when they approved those <a href="#surreptitious" class="wti-highlight">surreptitious</a> cover-ups — there was no going back now. A <a href="#neophyte" class="wti-highlight">neophyte</a> journalist, acting as an unlikely <a href="#custodian" class="wti-highlight">custodian</a> of the leaked documents, published everything online. The company's frantic attempts to suppress the story only triggered the <a href="#streisand" class="wti-highlight">Streisand Effect</a>, amplifying the scandal tenfold. Critics compared the public's delayed outrage to the <a href="#boiling-frog" class="wti-highlight">boiling frog effect</a>: the warning signs had been there for years, ignored until it was too late. The CEO, meanwhile, <a href="#convalesce" class="wti-highlight">convalesced</a> at a private clinic in Switzerland, reportedly suffering from "exhaustion." Some journalists darkly compared the company's workplace practices to <a href="#insulin-coma" class="wti-highlight">insulin coma therapy</a> — a brutal, discredited attempt to fix what was never truly broken.</p>
+          </div>
+        </div>
+      </article>
+      
+      <footer>
+        <div>thx for reading</div>
+      </footer>
+    </div>
+  </div>
+  
+  <script>
+    let darkMode = true;
+    
+    // Initialize dark mode on load
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('pageWrapper').classList.add('dark-mode');
+    });
+    
+    function toggleTheme() {
+      darkMode = !darkMode;
+      document.getElementById('pageWrapper').classList.toggle('dark-mode', darkMode);
+    }
+
+    // Page transition for back link
+    document.getElementById('backLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('pageWrapper').classList.add('page-transition-out');
+      setTimeout(() => {
+        window.location.href = this.getAttribute('href');
+      }, 300);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dissocite</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Courier New', monospace; line-height: 1.6; font-size: 14px; overflow-x: hidden; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #fafafa; }
+    ::-webkit-scrollbar-thumb { background: #e85555; border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ee5a5a; }
+    .dark-mode ::-webkit-scrollbar-track { background: #1a1a1a; }
+    .dark-mode ::-webkit-scrollbar-thumb { background: #e85555; }
+    .dark-mode ::-webkit-scrollbar-thumb:hover { background: #d94a4a; }
+    
+    /* Section fade-in on scroll */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .fade-in-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Make sections visible immediately if JS hasn't loaded yet */
+    .no-js .fade-in-section {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Reading progress bar */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background-color: #e85555;
+      z-index: 9999;
+      transition: width 0.1s ease-out;
+    }
+    .dark-mode .reading-progress { background-color: #e85555; }
+    
+    /* Page transition */
+    .page-wrapper { 
+      background-color: #fafafa; 
+      color: #c96a6a; 
+      min-height: 100vh; 
+      transition: all 0.3s ease;
+      animation: fadeIn 0.6s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .page-wrapper.dark-mode { background-color: #1a1a1a; color: #e0e0e0; }
+    
+    /* Link transition for page navigation */
+    a { color: #e85555; text-decoration: underline; transition: opacity 0.2s ease; }
+    a:hover { opacity: 0.7; }
+    .page-transition-out {
+      animation: fadeOut 0.3s ease-in forwards;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
+    
+    .dark-mode a { color: #e85555; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+    header { margin-bottom: 60px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .header-left { display: flex; flex-direction: column; gap: 8px; }
+    .site-header-top { display: flex; align-items: center; gap: 12px; }
+    .site-logo { 
+      width: 36px; 
+      height: 36px; 
+      border-radius: 50%; 
+      object-fit: cover;
+    }
+    .site-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #e85555; min-width: 120px; }
+    .site-title .cursor { animation: blink 1s infinite; }
+    @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+    .dark-mode .site-title { color: #e85555; }
+    nav { display: flex; gap: 24px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .theme-toggle { background: none; border: 1px solid #e85555; color: #e85555; font-size: 18px; width: 36px; height: 36px; cursor: pointer; }
+    .dark-mode .theme-toggle { border-color: #e85555; color: #e85555; }
+    
+    .hero-image { width: 100%; max-width: 900px; margin: 0 auto 60px; height: 400px; overflow: hidden; background: linear-gradient(135deg, #e85555, #ee5a6f); display: flex; align-items: center; justify-content: center; position: relative; }
+    .hero-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.25;
+      z-index: 3;
+      pointer-events: none;
+      animation: staticFlicker 0.05s steps(3) infinite;
+    }
+    .hero-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.15) 0px,
+        rgba(0,0,0,0.15) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 4;
+      pointer-events: none;
+      animation: scanlines 4s linear infinite;
+    }
+    @keyframes staticFlicker {
+      0% { transform: translate(0, 0) scaleX(1); opacity: 0.25; }
+      25% { transform: translate(-2%, 1%) scaleX(1.01); opacity: 0.3; }
+      50% { transform: translate(1%, -2%) scaleX(0.99); opacity: 0.2; }
+      75% { transform: translate(-1%, -1%) scaleX(1.02); opacity: 0.35; }
+      100% { transform: translate(2%, 2%) scaleX(1); opacity: 0.25; }
+    }
+    @keyframes scanlines {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100px; }
+    }
+    @keyframes glitch {
+      0% { transform: scale(1.0) translate(0%, 0%); filter: sepia(100%) hue-rotate(-30deg) saturate(400%) brightness(0.8) contrast(1.1); }
+      2% { transform: scale(1.0) translate(-5px, 0); filter: sepia(100%) hue-rotate(-30deg) saturate(400%) brightness(0.8) contrast(1.1); }
+      4% { transform: scale(1.0) translate(5px, 0); filter: sepia(100%) hue-rotate(-30deg) saturate(400%) brightness(0.8) contrast(1.1); }
+      6% { transform: scale(1.0) translate(0%, 0%); }
+      8% { transform: scale(1.0) translate(-3px, 0); }
+      10% { transform: scale(1.0) translate(0%, 0%); }
+      25% { transform: scale(1.08) translate(-2%, -2%); filter: sepia(100%) hue-rotate(-20deg) saturate(450%) brightness(0.85) contrast(1.15); }
+      27% { transform: scale(1.08) translate(4px, -2%); filter: sepia(100%) hue-rotate(0deg) saturate(500%) brightness(0.9) contrast(1.2); }
+      29% { transform: scale(1.08) translate(-2%, -2%); filter: sepia(100%) hue-rotate(-20deg) saturate(450%) brightness(0.85) contrast(1.15); }
+      50% { transform: scale(1.05) translate(2%, 0%); filter: sepia(100%) hue-rotate(-40deg) saturate(380%) brightness(0.75) contrast(1.2); }
+      52% { transform: scale(1.05) translate(2%, 5px); }
+      54% { transform: scale(1.05) translate(2%, 0%); }
+      75% { transform: scale(1.1) translate(-1%, 2%); filter: sepia(100%) hue-rotate(-25deg) saturate(420%) brightness(0.9) contrast(1.1); }
+      77% { transform: scale(1.1) translate(6px, 2%); filter: sepia(100%) hue-rotate(-60deg) saturate(500%) brightness(1.0) contrast(1.3); }
+      79% { transform: scale(1.1) translate(-1%, 2%); filter: sepia(100%) hue-rotate(-25deg) saturate(420%) brightness(0.9) contrast(1.1); }
+      100% { transform: scale(1.0) translate(0%, 0%); filter: sepia(100%) hue-rotate(-30deg) saturate(400%) brightness(0.8) contrast(1.1); }
+    }
+    .hero-image img { 
+      width: 130%; 
+      height: 130%; 
+      object-fit: cover; 
+      filter: sepia(100%) hue-rotate(-30deg) saturate(400%) brightness(0.8) contrast(1.1); 
+      display: block; 
+      animation: glitch 10s ease-in-out infinite;
+      transform-origin: center center;
+    }
+    .hero-image .glitch-copy {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 130%;
+      height: 130%;
+      object-fit: cover;
+      opacity: 0.5;
+      mix-blend-mode: screen;
+      filter: sepia(100%) hue-rotate(-30deg) saturate(400%) brightness(0.8) contrast(1.1);
+      animation: glitchCopy 10s ease-in-out infinite;
+    }
+    @keyframes glitchCopy {
+      0%, 100% { transform: translate(0, 0); opacity: 0; }
+      2%, 8% { transform: translate(10px, -5px); opacity: 0.3; filter: sepia(100%) hue-rotate(60deg) saturate(600%) brightness(1) contrast(1.2); }
+      27%, 29% { transform: translate(-8px, 3px); opacity: 0.4; filter: sepia(100%) hue-rotate(-90deg) saturate(500%) brightness(0.9) contrast(1.1); }
+      52%, 54% { transform: translate(5px, 8px); opacity: 0.35; filter: sepia(100%) hue-rotate(30deg) saturate(550%) brightness(1.1) contrast(1.3); }
+      77%, 79% { transform: translate(-12px, -4px); opacity: 0.45; filter: sepia(100%) hue-rotate(-45deg) saturate(480%) brightness(0.95) contrast(1.15); }
+    }
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-bottom: 80px; }
+    @media (max-width: 768px) { 
+      .main-grid { grid-template-columns: 1fr; gap: 40px; } 
+      .container { padding: 24px 16px; }
+      header { flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+      .header-left { flex: 1; }
+      .theme-toggle { order: 0; }
+      nav { width: 100%; margin-top: 12px; display: flex; gap: 16px; }
+      nav a { font-size: 12px; }
+      .hero-image { height: 200px; margin-bottom: 40px; }
+      .shelf-tabs { overflow-x: auto; }
+      .shelf-tab { padding: 12px 16px; font-size: 12px; white-space: nowrap; }
+      .book-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px; }
+      .book-cover { font-size: 7px; padding: 4px; }
+      .badge { font-size: 7px; padding: 1px 4px; }
+      .stats-section { padding: 16px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .stat-number { font-size: 20px; }
+      .modal { width: 95%; max-width: none; margin: 16px; padding: 20px; }
+      .modal-title { font-size: 18px; }
+      .currently-reading { max-width: 100%; }
+      .sort-controls { gap: 8px; }
+      .sort-btn { padding: 4px 8px; font-size: 10px; }
+      .tooltip { display: none; }
+    }
+    @media (max-width: 480px) {
+      .site-title { font-size: 12px; }
+      .year-label { font-size: 11px; }
+      .search-box input { font-size: 12px; padding: 8px 10px; }
+    }
+    .section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #e85555; color: #e85555; }
+    .dark-mode .section-title { border-color: #e85555; color: #e85555; }
+    .about-header { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
+    .about-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e85555;
+      flex-shrink: 0;
+    }
+    .dark-mode .about-image { border-color: #e85555; }
+    .label { font-size: 12px; text-transform: uppercase; opacity: 0.7; margin: 16px 0 4px; color: #c96a6a; font-weight: 700; }
+    .dark-mode .label { color: #e85555; }
+    ul { list-style: none; margin-bottom: 24px; }
+    li { padding-left: 16px; position: relative; margin-bottom: 8px; color: #c96a6a; }
+    .dark-mode li { color: #e85555; }
+    li::before { content: "-"; position: absolute; left: 0; }
+    .writing-list li { padding: 12px 0; border-bottom: 1px dashed #e85555; }
+    .writing-list li::before { display: none; }
+    .source { font-size: 11px; text-transform: uppercase; opacity: 0.6; margin-top: 4px; color: #c96a6a; }
+    .view-all-link { display: inline-block; margin-top: 16px; font-size: 12px; text-transform: uppercase; color: #e85555; text-decoration: none; opacity: 0.8; }
+    .view-all-link:hover { opacity: 1; text-decoration: underline; }
+    .dark-mode .view-all-link { color: #e85555; }
+    .shelf-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 1px solid #e85555; }
+    .shelf-tab { font-family: inherit; font-size: 14px; font-weight: 600; text-transform: uppercase; background: none; border: none; color: #e85555; padding: 12px 24px; cursor: pointer; opacity: 0.6; position: relative; }
+    .shelf-tab.active { opacity: 1; }
+    .shelf-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background-color: #e85555; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .search-box input { width: 100%; font-family: inherit; font-size: 13px; padding: 10px 12px; background-color: #fff5f5; border: 1px solid #e85555; color: #e85555; }
+    .sort-controls { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+    .sort-btn { font-family: inherit; font-size: 11px; text-transform: uppercase; background: none; border: 1px solid #e85555; color: #e85555; padding: 6px 12px; cursor: pointer; }
+    .sort-btn.active { background-color: #e85555; color: #fef6e4; }
+    .year-label { font-size: 12px; font-weight: 600; text-transform: uppercase; margin: 40px 0 16px; color: #e85555; }
+    .currently-reading {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border: 1px dashed #e85555;
+      margin-top: 24px;
+      margin-bottom: 32px;
+      max-width: 280px;
+    }
+    .currently-reading-cover {
+      width: 60px;
+      height: 90px;
+      background-color: #fff5f5;
+      border: 1px solid #e85555;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .currently-reading-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .currently-reading-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .currently-reading-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+      color: #c96a6a;
+    }
+    .currently-reading-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e85555;
+    }
+    .currently-reading-author {
+      font-size: 12px;
+      color: #c96a6a;
+    }
+    .dark-mode .currently-reading { border-color: #e85555; }
+    .dark-mode .currently-reading-cover { background-color: #3d2318; border-color: #e85555; }
+    .dark-mode .currently-reading-label { color: #e85555; }
+    .dark-mode .currently-reading-title { color: #e85555; }
+    .dark-mode .currently-reading-author { color: #e85555; }
+    .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; }
+    .book-cover { 
+      aspect-ratio: 2/3; 
+      background-color: #fff5f5; 
+      border: 1px solid #e85555; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 8px; 
+      font-size: 9px; 
+      text-align: center; 
+      text-transform: uppercase; 
+      cursor: pointer; 
+      position: relative; 
+      color: #c96a6a; 
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .book-cover:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 24px rgba(255, 107, 107, 0.2);
+    }
+    .dark-mode .book-cover:hover {
+      box-shadow: 0 12px 24px rgba(232, 196, 160, 0.15);
+    }
+    .book-cover img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      position: absolute; 
+      top: 0; 
+      left: 0;
+      transition: transform 0.3s ease;
+    }
+    .book-cover:hover img { 
+      transform: scale(1.05);
+    }
+    /* Tooltip */
+    .book-cover .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background-color: #e85555;
+      color: #fef6e4;
+      padding: 8px 12px;
+      font-size: 11px;
+      text-transform: none;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      max-width: 200px;
+      white-space: normal;
+      text-align: center;
+    }
+    .book-cover .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #e85555;
+    }
+    .book-cover:hover .tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .dark-mode .book-cover .tooltip {
+      background-color: #e85555;
+      color: #1a1a1a;
+    }
+    .dark-mode .book-cover .tooltip::after {
+      border-top-color: #e85555;
+    }
+    .badge { 
+      position: absolute; 
+      top: 4px; 
+      right: 4px; 
+      font-size: 9px; 
+      background-color: #fef6e4; 
+      padding: 2px 6px; 
+      z-index: 2; 
+      color: #e85555;
+      border-radius: 2px;
+      font-weight: 600;
+    }
+    .book-title-fallback {
+      position: relative;
+      z-index: 1;
+      background-color: rgba(254, 246, 228, 0.9);
+      padding: 4px;
+      display: none;
+    }
+    .book-cover.no-image .book-title-fallback {
+      display: block;
+    }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+    .modal { background-color: #fef6e4; max-width: 600px; width: 100%; padding: 32px; position: relative; border: 2px solid #e85555; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #e85555; font-size: 24px; cursor: pointer; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: #e85555; }
+    .modal-author { font-size: 14px; opacity: 0.8; color: #e85555; }
+    .modal-review { font-size: 13px; margin-top: 16px; line-height: 1.7; color: #c96a6a; }
+    .dark-mode .modal { background-color: #1a1a1a; border-color: #e85555; }
+    .dark-mode .modal-close, .dark-mode .modal-title, .dark-mode .modal-author, .dark-mode .modal-review { color: #e85555; }
+    footer { margin-top: 100px; padding-top: 40px; border-top: 1px solid #e85555; display: flex; justify-content: space-between; color: #e85555; }
+    .dark-mode footer { border-color: #e85555; color: #e85555; }
+    .scroll-top { position: fixed; bottom: 24px; right: 24px; background-color: #e85555; color: #fef6e4; border: none; width: 40px; height: 40px; font-size: 20px; cursor: pointer; display: none; }
+    .scroll-top.visible { display: block; }
+    .dark-mode .scroll-top { background-color: #e85555; color: #1a1a1a; }
+    .dark-mode .search-box input { background-color: #3d2318; border-color: #e85555; color: #e85555; }
+    .dark-mode .sort-btn { border-color: #e85555; color: #e85555; }
+    .dark-mode .sort-btn.active { background-color: #e85555; color: #1a1a1a; }
+    .dark-mode .year-label { color: #e85555; }
+    .dark-mode .book-cover { background-color: #3d2318; border-color: #e85555; color: #e85555; }
+    .dark-mode .badge { background-color: #1a1a1a; color: #e85555; }
+    .dark-mode .shelf-tab { color: #e85555; }
+    .dark-mode .shelf-tab.active::after { background-color: #e85555; }
+    .dark-mode .shelf-tabs { border-color: #e85555; }
+    .dark-mode .writing-list li { border-color: #e85555; }
+    .dark-mode .source { color: #e85555; }
+    .stats-section { margin-top: 32px; margin-bottom: 32px; padding: 16px 20px; border-left: 2px solid #e85555; background: transparent; }
+    .stats-grid { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 16px; }
+    .stat-item { text-align: left; }
+    .stat-number { font-size: 20px; font-weight: 700; color: #e85555; }
+    .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.6; color: #c96a6a; }
+    .goal-section { margin-top: 12px; }
+    .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 10px; text-transform: uppercase; color: #c96a6a; opacity: 0.8; }
+    .goal-bar { height: 6px; background-color: rgba(232, 85, 85, 0.15); border-radius: 3px; overflow: hidden; }
+    .goal-progress { height: 100%; background-color: #e85555; border-radius: 3px; transition: width 0.5s ease; }
+    .dark-mode .stats-section { border-color: #e85555; }
+    .dark-mode .stat-number { color: #e85555; }
+    .dark-mode .stat-label { color: #e85555; }
+    .dark-mode .goal-header { color: #e85555; }
+    .dark-mode .goal-bar { background-color: rgba(232, 85, 85, 0.2); }
+    .dark-mode .goal-progress { background-color: #e85555; }
+  </style>
+</head>
+<body>
+  <div class="reading-progress" id="readingProgress"></div>
+  <div class="page-wrapper" id="pageWrapper">
+    <div class="container">
+      <header>
+        <div class="header-left">
+          <div class="site-header-top">
+            <img src="https://i.imgur.com/6Y65h6C.png" alt="dissocite logo" class="site-logo">
+            <div class="site-title" id="siteTitle"></div>
+          </div>
+          <nav>
+            <a href="#about">About</a>
+            <a href="#writing">Writing</a>
+            <a href="#shelf">Shelf</a>
+          </nav>
+        </div>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()">☀</button>
+      </header>
+
+      <div class="hero-image">
+        <img 
+          src="https://i.imgur.com/3sXmXKx.jpeg" 
+          alt="Hero image"
+          onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #e85555, #ee5a6f)';"
+        />
+      </div>
+
+      <div class="main-grid">
+        <div id="about" class="fade-in-section">
+          <h2 class="section-title">About Me</h2>
+          <p class="label">//now//</p>
+          <ul>
+            <li>MSc Neuroscience student</li>
+          </ul>
+          <p class="label">//interests//</p>
+          <ul>
+            <li>Active: running, weight lifting, hockey</li>
+            <li>Creative: writing, videography, music</li>
+            <li>Curious about: science, politics, philosophy, health & nutrition</li>
+          </ul>
+          <p class="label">//about this site//</p>
+          <ul>
+            <li>A space for essays, reviews, and monthly curiosities</li>
+          </ul>
+        </div>
+
+        <div id="writing" class="fade-in-section">
+          <h2 class="section-title">Writing</h2>
+          <ul class="writing-list">
+            <li>
+              <a href="words-things-ideas-december-2025.html">Words, Things, and Ideas of the Month - December 2025</a>
+              <div class="source">December 21 · 2025</div>
+            </li>
+            <li>
+              <a href="future-of-social-networks.html">An Introduction</a>
+              <div class="source">December 16 · 2025</div>
+            </li>
+          </ul>
+          <a href="writing.html" class="view-all-link">View all →</a>
+        </div>
+      </div>
+
+      <section id="shelf" class="fade-in-section">
+        <div class="shelf-tabs">
+          <button class="shelf-tab active" data-tab="books" onclick="setActiveTab('books')">Bookshelf</button>
+          <button class="shelf-tab" data-tab="movies" onclick="setActiveTab('movies')">Movie Shelf</button>
+        </div>
+
+        <!-- Books Tab -->
+        <div class="tab-content active" id="books-tab">
+          <div class="search-box">
+            <input type="text" placeholder="Search books..." id="bookSearch" oninput="filterContent()">
+          </div>
+          <div id="books-container"></div>
+        </div>
+
+        <!-- Movies Tab -->
+        <div class="tab-content" id="movies-tab">
+          <div class="search-box">
+            <input type="text" placeholder="Search movies..." id="movieSearch" oninput="filterContent()">
+          </div>
+          <div class="sort-controls">
+            <span>Sort by:</span>
+            <button class="sort-btn active" data-sort="all" onclick="setMovieSort('all')">All</button>
+            <button class="sort-btn" data-sort="highest" onclick="setMovieSort('highest')">Highest Rated</button>
+          </div>
+          <div id="movies-container"></div>
+        </div>
+
+      </section>
+
+      <footer>
+        <div>thx for reading</div>
+      </footer>
+
+      <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">↑</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" style="display: none;" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-author" id="modalAuthor"></div>
+      <div class="modal-review" id="modalReview"></div>
+    </div>
+  </div>
+
+  <script>
+    // Data
+    const currentlyReading = {
+      title: "Pet Sematary",
+      author: "Stephen King",
+      cover: "https://covers.openlibrary.org/b/isbn/9781982112394-L.jpg"
+    };
+
+    const books = {
+      "2026": [
+        { title: "Coming soon...", author: "", rating: 0, cover: "", review: "" }
+      ],
+      "2025": [
+        { title: "Outlive", author: "Peter Attia", rating: 4, cover: "https://covers.openlibrary.org/b/isbn/9780593236598-L.jpg", review: "No review yet." },
+        { title: "Beartown", author: "Fredrik Backman", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9781501160769-L.jpg", review: "I really loved the sense of community that Backman builds in this book; it makes you feel like you're a resident of Beartown. I also like how there's a constant back and forth between the lives of different characters, and that we get to see the different perspectives on the serious situation that unfolds. I can understand why HBO turned the Beartown trilogy into a series because it really felt like one while reading. As someone who played organized ice hockey for 10 years, the \"hockey culture\" portrayed in the book is really accurate, especially as it relates to the toxic teenage behavior and the desperate need to prove oneself and fit in. This was my first Backman book and I thoroughly enjoyed it. I might be biased because of my hockey background, which made the book really relatable, but the writing kept me engaged, so I will likely read the follow-up book, \"Us Against You\"." },
+        { title: "A Man Called Ove", author: "Fredrik Backman", rating: 4.25, cover: "https://covers.openlibrary.org/b/isbn/9781476738024-L.jpg", review: "No review yet." },
+        { title: "Tender Is the Flesh", author: "Agustina Bazterrica", rating: 4, cover: "https://covers.openlibrary.org/b/isbn/9781982150921-L.jpg", review: "No review yet." },
+        { title: "Chercher Sam", author: "Sophie Bienvenu", rating: 4.25, cover: "https://i.imgur.com/5Ix58yw.jpeg", review: "No review yet." },
+        { title: "Something Wicked This Way Comes", author: "Ray Bradbury", rating: "DNF", cover: "https://covers.openlibrary.org/b/isbn/9780380729401-L.jpg", review: "No review yet." },
+        { title: "The Indifferent Stars Above", author: "Daniel James Brown", rating: 4.25, cover: "https://covers.openlibrary.org/b/isbn/9780061348112-L.jpg", review: "No review yet." },
+        { title: "The Rise and Fall of the Dinosaurs", author: "Steve Brusatte", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9780062490421-L.jpg", review: "No review yet." },
+        { title: "A Walk in the Woods", author: "Bill Bryson", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9780767902526-L.jpg", review: "No review yet." },
+        { title: "Brain On Fire", author: "Susannah Cahalan", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9781451621372-L.jpg", review: "No review yet." },
+        { title: "The God Delusion", author: "Richard Dawkins", rating: 4, cover: "https://covers.openlibrary.org/b/isbn/9780618680009-L.jpg", review: "No review yet." },
+        { title: "Supercommunicators", author: "Charles Duhigg", rating: 3.75, cover: "https://covers.openlibrary.org/b/isbn/9780593243916-L.jpg", review: "No review yet." },
+        { title: "Barbarian Days", author: "William Finnegan", rating: "DNF", cover: "https://covers.openlibrary.org/b/isbn/9781594203473-L.jpg", review: "No review yet." },
+        { title: "Everything is Tuberculosis", author: "John Green", rating: 4.25, cover: "https://covers.openlibrary.org/b/isbn/9780525556572-L.jpg", review: "Before reading this book, I knew next to nothing about tuberculosis other than it affected the lungs and was pretty severe. I also thought it was mostly a disease of the past. However, it clearly only seemed that way because I live in the Western world, where we have easy access to modern high-grade diagnostic tools, pharmaceuticals, and treatment facilities, among other things. This has allowed us to control and overcome tuberculosis, but in other, much poorer, parts of the world, such as Sierra Leone, tuberculosis still kills many people yearly. This is largely, and almost strictly, due to poverty, inequity, and injustice. It's incredibly sad and frustrating that so many yearly tuberculosis deaths worldwide could be prevented, if not for greed and apathy. This quote pretty much sums it up: \"I would submit that TB in the twenty-first century is not really caused by a bacteria that we know how to kill. TB in the twenty-first century is really caused by those social determinants of health...\" I also want to say that the world would be a much better place if more people had even a third of the empathy that John Green does." },
+        { title: "Empire of Pain", author: "Patrick Radden Keefe", rating: 4.75, cover: "https://covers.openlibrary.org/b/isbn/9780385545686-L.jpg", review: "No review yet." },
+        { title: "The Sixth Extinction: An Unnatural History", author: "Elizabeth Kolbert", rating: 3.75, cover: "https://covers.openlibrary.org/b/isbn/9781250062185-L.jpg", review: "No review yet." },
+        { title: "Eiger Dreams", author: "Jon Krakauer", rating: 4.25, cover: "https://covers.openlibrary.org/b/isbn/9780385488181-L.jpg", review: "No review yet." },
+        { title: "When the Body Says No", author: "Gabor Maté", rating: 3, cover: "https://covers.openlibrary.org/b/isbn/9781785042225-L.jpg", review: "Outdated and relies too heavily on anecdotal evidence." },
+        { title: "Born to Run", author: "Christopher McDougall", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9780307266309-L.jpg", review: "No review yet." },
+        { title: "The Things They Carried", author: "Tim O'Brien", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9780618706419-L.jpg", review: "No review yet." },
+        { title: "The Bell Jar", author: "Sylvia Plath", rating: 3.75, cover: "https://covers.openlibrary.org/b/isbn/9780060837020-L.jpg", review: "The writing is great, the main character is super relatable (if you've experienced depression), but the plot is kind of non-existent. Maybe that's kind of the point, given the themes of the book and the fact that it's character-driven, but it's not something I'm accustomed to; it almost made me want to stop reading in the first half of the book. However, the writing and the second half of the book made it worthwhile." },
+        { title: "Stiff", author: "Mary Roach", rating: 4.25, cover: "https://covers.openlibrary.org/b/isbn/9780393050936-L.jpg", review: "No review yet." },
+        { title: "The Wisdom of Insecurity", author: "Alan Watts", rating: 3.25, cover: "https://covers.openlibrary.org/b/isbn/9780394704685-L.jpg", review: "No review yet." },
+        { title: "Educated", author: "Tara Westover", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9780399590504-L.jpg", review: "No review yet." },
+        { title: "Night", author: "Elie Wiesel", rating: 4.5, cover: "https://covers.openlibrary.org/b/isbn/9780374500016-L.jpg", review: "No review yet." }
+      ]
+    };
+
+    const movies = {
+      "2026": [
+        { title: "Coming soon...", year: "", rating: 0, cover: "", review: "" }
+      ],
+      "2025": [
+        { title: "The Holdovers", year: "2023", rating: 4.5, cover: "https://i.imgur.com/mqolnTh.jpeg", review: "No review yet." },
+        { title: "In Bruges", year: "2008", rating: 4.5, cover: "https://i.imgur.com/a73iaIn.jpeg", review: "No review yet." },
+        { title: "The Banshees of Inisherin", year: "2022", rating: 3, cover: "https://image.tmdb.org/t/p/w500/4yFG6cSPaCaPhyJ1vtGOtMD1lgh.jpg", review: "No review yet." },
+        { title: "Eternal Sunshine of the Spotless Mind", year: "2004", rating: 5, cover: "https://image.tmdb.org/t/p/w500/5MwkWH9tYHv3mV9OdYTMR5qreIz.jpg", review: "No review yet." },
+        { title: "The Truman Show", year: "1998", rating: 4.5, cover: "https://image.tmdb.org/t/p/w500/vuza0WqY239yBXOadKlGwJsZJFE.jpg", review: "No review yet." },
+        { title: "Children of Men", year: "2006", rating: 4.5, cover: "https://i.imgur.com/aAWW0w8.jpeg", review: "No review yet." },
+        { title: "The Hunt", year: "2012", rating: 4.5, cover: "https://i.imgur.com/AMwTq0x.jpeg", review: "No review yet." },
+        { title: "Whiplash", year: "2014", rating: 5, cover: "https://image.tmdb.org/t/p/w500/7fn624j5lj3xTme2SgiLCeuedmO.jpg", review: "No review yet." },
+        { title: "A Real Pain", year: "2024", rating: 4, cover: "https://i.imgur.com/0nE1Jyl.jpeg", review: "No review yet." },
+        { title: "The Rescue", year: "2021", rating: 4.5, cover: "https://i.imgur.com/MlyhENs.jpeg", review: "No review yet." },
+        { title: "The Peanut Butter Falcon", year: "2019", rating: 4, cover: "https://i.imgur.com/8Q4aY7T.jpeg", review: "No review yet." },
+        { title: "Sound of Metal", year: "2020", rating: 4, cover: "https://i.imgur.com/hYJoT13.jpeg", review: "No review yet." },
+        { title: "Frankenstein", year: "2025", rating: 4, cover: "https://i.imgur.com/zhBiZGp.jpeg", review: "No review yet." }
+      ]
+    };
+
+    // State
+    let darkMode = true;
+    let activeTab = 'books';
+    let bookSortByYear = { "2025": "all", "2026": "all" };
+    let movieSortByYear = { "2025": "all", "2026": "all" };
+
+    // Initialize dark mode on load
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('pageWrapper').classList.add('dark-mode');
+      document.getElementById('themeToggle').textContent = '☽';
+    });
+
+    // Functions
+    function toggleDarkMode() {
+      darkMode = !darkMode;
+      document.getElementById('pageWrapper').classList.toggle('dark-mode', darkMode);
+      document.getElementById('themeToggle').textContent = darkMode ? '☽' : '☀';
+    }
+
+    function setActiveTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.shelf-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(tab + '-tab').classList.add('active');
+      filterContent();
+    }
+
+    function setBookSort(year, sort) {
+      bookSortByYear[year] = sort;
+      document.querySelectorAll(`.sort-btn[data-year="${year}"]`).forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sort === sort);
+      });
+      filterContent();
+    }
+
+    function setMovieSort(sort) {
+      activeMovieSort = sort;
+      document.querySelectorAll('#movies-tab .sort-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sort === sort);
+      });
+      filterContent();
+    }
+
+    function filterContent() {
+      renderBooks();
+      renderMovies();
+    }
+
+    function renderBookStats() {
+      const container = document.getElementById('book-stats');
+      if (!container) return;
+      
+      const readingGoal = 26; // Set your 2025 reading goal here
+      
+      // Get 2025 books only for stats
+      const books2025 = books["2025"] || [];
+      const completedBooks = books2025.filter(b => b.rating !== "DNF" && b.title !== "Coming soon...");
+      const dnfBooks = books2025.filter(b => b.rating === "DNF");
+      
+      const totalRead = completedBooks.length;
+      const ratings = completedBooks.map(b => b.rating).filter(r => typeof r === 'number');
+      const avgRating = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(2) : 0;
+      const highestRated = completedBooks.filter(b => b.rating >= 4.5).length;
+      const progressPercent = Math.min((totalRead / readingGoal) * 100, 100);
+      
+      container.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number">${totalRead}</div>
+            <div class="stat-label">Books Read (2025)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">${avgRating}</div>
+            <div class="stat-label">Avg Rating</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">${highestRated}</div>
+            <div class="stat-label">Rated 4.5+</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">${dnfBooks.length}</div>
+            <div class="stat-label">DNF</div>
+          </div>
+        </div>
+        <div class="goal-section">
+          <div class="goal-header">
+            <span>2025 Reading Goal</span>
+            <span>${totalRead} / ${readingGoal} books</span>
+          </div>
+          <div class="goal-bar">
+            <div class="goal-progress" style="width: ${progressPercent}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBooks() {
+      const container = document.getElementById('books-container');
+      const searchTerm = document.getElementById('bookSearch').value.toLowerCase();
+      let html = '';
+
+      // Currently Reading section (only show when not searching)
+      if (!searchTerm && currentlyReading) {
+        html += `
+          <div class="currently-reading">
+            <div class="currently-reading-cover">
+              ${currentlyReading.cover ? `<img src="${currentlyReading.cover}" alt="${currentlyReading.title}">` : ''}
+            </div>
+            <div class="currently-reading-info">
+              <div class="currently-reading-label">Currently Reading</div>
+              <div class="currently-reading-title">${currentlyReading.title}</div>
+              <div class="currently-reading-author">${currentlyReading.author}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      Object.keys(books).sort((a, b) => b - a).forEach(year => {
+        let filtered = books[year];
+        const yearSort = bookSortByYear[year] || 'all';
+
+        if (yearSort === 'highest') {
+          filtered = [...filtered]
+            .filter(b => b.rating !== "DNF" && b.title !== "Coming soon...")
+            .sort((a, b) => b.rating - a.rating);
+        } else if (yearSort === 'dnf') {
+          filtered = filtered.filter(b => b.rating === "DNF");
+        }
+
+        if (searchTerm) {
+          filtered = filtered.filter(b => 
+            b.title.toLowerCase().includes(searchTerm) ||
+            (b.author && b.author.toLowerCase().includes(searchTerm))
+          );
+        }
+
+        // Year label
+        html += `<div class="year-label">${year}</div>`;
+        
+        // Per-year sort controls
+        html += `
+          <div class="sort-controls">
+            <span>Sort by:</span>
+            <button class="sort-btn ${yearSort === 'all' ? 'active' : ''}" data-year="${year}" data-sort="all" onclick="setBookSort('${year}', 'all')">All</button>
+            <button class="sort-btn ${yearSort === 'highest' ? 'active' : ''}" data-year="${year}" data-sort="highest" onclick="setBookSort('${year}', 'highest')">Highest Rated</button>
+            <button class="sort-btn ${yearSort === 'dnf' ? 'active' : ''}" data-year="${year}" data-sort="dnf" onclick="setBookSort('${year}', 'dnf')">DNF</button>
+          </div>
+        `;
+
+        if (filtered.length > 0) {
+          html += '<div class="book-grid">';
+          filtered.forEach((book, index) => {
+            const ratingDisplay = book.rating === "DNF" ? "DNF" : (book.rating ? `★ ${book.rating}` : '');
+            const tooltipText = book.rating === "DNF" ? `${book.title} (DNF)` : (book.rating ? `${book.title} — ${book.rating}/5` : book.title);
+            html += `
+              <div class="book-cover" onclick="openBookModal('${year}', ${books[year].indexOf(book)})">
+                ${book.cover ? `<img src="${book.cover}" alt="${book.title}" onerror="this.style.display='none'; this.parentElement.classList.add('no-image');">` : ''}
+                <span class="book-title-fallback">${book.title}</span>
+                ${ratingDisplay ? `<span class="badge">${ratingDisplay}</span>` : ''}
+                <span class="tooltip">${tooltipText}</span>
+              </div>
+            `;
+          });
+          html += '</div>';
+        } else {
+          html += '<div style="padding: 20px; opacity: 0.6;">No books match this filter.</div>';
+        }
+
+        // Add stats section after 2025 books only when showing 'all'
+        if (year === "2025" && yearSort === "all") {
+          html += '<div id="book-stats" class="stats-section"></div>';
+        }
+      });
+
+      container.innerHTML = html;
+      
+      // Render stats after DOM is updated
+      renderBookStats();
+    }
+
+    function setMovieSort(year, sort) {
+      movieSortByYear[year] = sort;
+      renderMovies();
+    }
+
+    function renderMovies() {
+      const container = document.getElementById('movies-container');
+      const searchTerm = document.getElementById('movieSearch').value.toLowerCase();
+      let html = '';
+
+      Object.keys(movies).sort((a, b) => b - a).forEach(year => {
+        let filtered = movies[year];
+        const yearSort = movieSortByYear[year] || 'all';
+
+        if (yearSort === 'highest') {
+          filtered = [...filtered].sort((a, b) => b.rating - a.rating);
+        }
+
+        if (searchTerm) {
+          filtered = filtered.filter(m => m.title.toLowerCase().includes(searchTerm));
+        }
+
+        html += `<div class="year-label">${year}</div>`;
+        html += `
+          <div class="sort-controls">
+            <button class="sort-btn ${yearSort === 'all' ? 'active' : ''}" onclick="setMovieSort('${year}', 'all')">All</button>
+            <button class="sort-btn ${yearSort === 'highest' ? 'active' : ''}" onclick="setMovieSort('${year}', 'highest')">Highest Rated</button>
+          </div>
+        `;
+
+        if (filtered.length > 0) {
+          html += '<div class="book-grid">';
+          filtered.forEach(movie => {
+            const ratingDisplay = movie.rating ? `★ ${movie.rating}` : '';
+            const tooltipText = movie.rating ? `${movie.title} — ${movie.rating}/5` : movie.title;
+            html += `
+              <div class="book-cover" onclick="openMovieModal('${year}', ${movies[year].indexOf(movie)})">
+                ${movie.cover ? `<img src="${movie.cover}" alt="${movie.title}" onerror="this.style.display='none'; this.parentElement.classList.add('no-image');">` : ''}
+                <span class="book-title-fallback">${movie.title}</span>
+                ${ratingDisplay ? `<span class="badge">${ratingDisplay}</span>` : ''}
+                <span class="tooltip">${tooltipText}</span>
+              </div>
+            `;
+          });
+          html += '</div>';
+        } else {
+          html += '<div style="padding: 20px; opacity: 0.6;">No movies match this filter.</div>';
+        }
+      });
+
+      container.innerHTML = html;
+    }
+
+    function openMovieModal(year, index) {
+      const movie = movies[year][index];
+      document.getElementById('modalTitle').textContent = movie.title;
+      document.getElementById('modalAuthor').textContent = movie.year || '';
+      document.getElementById('modalReview').textContent = movie.review || '';
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function openBookModal(year, index) {
+      const book = books[year][index];
+      document.getElementById('modalTitle').textContent = book.title;
+      document.getElementById('modalAuthor').textContent = book.author || '';
+      document.getElementById('modalReview').textContent = book.review || '';
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function openModal(title, author, review) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalAuthor').textContent = author;
+      document.getElementById('modalReview').textContent = review || '';
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    // Scroll to top button
+    window.addEventListener('scroll', () => {
+      document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 500);
+    });
+
+    // Typewriter effect
+    function typeWriter() {
+      const text = "dissocite";
+      const element = document.getElementById('siteTitle');
+      let i = 0;
+      
+      function type() {
+        if (i < text.length) {
+          element.innerHTML = text.substring(0, i + 1) + '<span class="cursor">|</span>';
+          i++;
+          setTimeout(type, 100);
+        } else {
+          element.innerHTML = text + '<span class="cursor">|</span>';
+        }
+      }
+      type();
+    }
+
+    // Page transition effect for external links
+    function initPageTransitions() {
+      document.querySelectorAll('a[href$=".html"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          if (href && !href.startsWith('#')) {
+            e.preventDefault();
+            document.getElementById('pageWrapper').classList.add('page-transition-out');
+            setTimeout(() => {
+              window.location.href = href;
+            }, 300);
+          }
+        });
+      });
+    }
+
+    // Smooth scroll for anchor links
+    function initSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href').substring(1);
+          const targetElement = document.getElementById(targetId);
+          if (targetElement) {
+            const offsetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - 20;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    }
+
+    // Reading progress bar
+    function initReadingProgress() {
+      const progressBar = document.getElementById('readingProgress');
+      
+      window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        progressBar.style.width = progress + '%';
+      });
+    }
+
+    // Section fade-in on scroll
+    function initFadeInSections() {
+      const sections = document.querySelectorAll('.fade-in-section');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      });
+      
+      sections.forEach(section => observer.observe(section));
+    }
+
+    // Initialize
+    filterContent();
+    typeWriter();
+    initPageTransitions();
+    initSmoothScroll();
+    initReadingProgress();
+    initFadeInSections();
+  </script>
+</body>
+</html>
