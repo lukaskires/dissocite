@@ -79,48 +79,13 @@
     .article-card-image { 
       height: 120px; 
       background-color: #ff6b6b; 
+      background-size: cover;
+      background-position: center;
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .article-card-image::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      opacity: 0.2;
-      z-index: 1;
-      pointer-events: none;
-      animation: staticFlicker 0.1s steps(3) infinite;
-    }
-    .article-card-image::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,0.1) 0px,
-        rgba(0,0,0,0.1) 1px,
-        transparent 1px,
-        transparent 3px
-      );
-      z-index: 2;
-      pointer-events: none;
-    }
-    @keyframes staticFlicker {
-      0% { transform: translate(0, 0); opacity: 0.2; }
-      25% { transform: translate(-1%, 1%); opacity: 0.25; }
-      50% { transform: translate(1%, -1%); opacity: 0.15; }
-      75% { transform: translate(-1%, -1%); opacity: 0.3; }
-      100% { transform: translate(1%, 1%); opacity: 0.2; }
     }
     .dark-mode .article-card-image { background-color: #e85555; }
     
@@ -231,15 +196,14 @@
       <div class="filter-controls">
         <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
         <button class="filter-btn" data-filter="personal" onclick="setFilter('personal')">Personal</button>
-        <button class="filter-btn" data-filter="neuroscience" onclick="setFilter('neuroscience')">Neuroscience</button>
-        <button class="filter-btn" data-filter="tech" onclick="setFilter('tech')">Tech</button>
+        <button class="filter-btn" data-filter="information" onclick="setFilter('information')">Information</button>
       </div>
       
       <div id="articles-container"></div>
       
       <footer>
         <div>thx for reading</div>
-        <a href="https://x.com/lukaskires">Twitter/X</a>
+        <a href="https://x.com/Dissocite_">Twitter/X</a>
       </footer>
     </div>
   </div>
@@ -258,16 +222,18 @@
         { 
           title: "Words, Things, and Ideas of the Month - December 2025", 
           date: "December 21", 
-          tag: "personal",
+          tag: "information",
           url: "words-things-ideas-december-2025.html",
-          heroText: "WTI DEC 2025"
+          heroText: "",
+          heroImage: "https://i.imgur.com/ZlL5Ijc.jpeg"
         },
         { 
           title: "An Introduction", 
           date: "December 16", 
           tag: "personal",
           url: "future-of-social-networks.html",
-          heroText: ""
+          heroText: "",
+          heroImage: "https://i.imgur.com/QrmbcvS.jpeg"
         }
       ]
     };
@@ -315,9 +281,12 @@
             const heroTextHtml = article.heroText 
               ? `<span class="article-card-hero-text" data-text="${article.heroText}">${article.heroText}</span>` 
               : '';
+            const imageStyle = article.heroImage 
+              ? `style="background-image: url('${article.heroImage}');"` 
+              : '';
             html += `
               <a href="${article.url}" class="article-card">
-                <div class="article-card-image">${heroTextHtml}</div>
+                <div class="article-card-image" ${imageStyle}>${heroTextHtml}</div>
                 <div class="article-card-content">
                   <div class="article-card-title">${article.title}</div>
                   <div class="article-card-meta">${article.date} · ${year}</div>
