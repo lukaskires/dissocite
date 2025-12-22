@@ -23,90 +23,51 @@
       width: 100%; 
       height: 200px; 
       background-color: #ff6b6b; 
+      background-image: url("https://i.imgur.com/QrmbcvS.jpeg");
+      background-size: cover;
+      background-position: center;
       margin-bottom: 40px; 
       position: relative; 
       overflow: hidden;
     }
-    .hero-rectangle::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-      opacity: 0.25;
-      z-index: 3;
-      pointer-events: none;
-      animation: staticFlicker 0.05s steps(3) infinite;
-    }
-    .hero-rectangle::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,0.15) 0px,
-        rgba(0,0,0,0.15) 1px,
-        transparent 1px,
-        transparent 3px
-      );
-      z-index: 4;
-      pointer-events: none;
-      animation: scanlines 4s linear infinite;
-    }
-    @keyframes staticFlicker {
-      0% { transform: translate(0, 0) scaleX(1); opacity: 0.25; }
-      25% { transform: translate(-2%, 1%) scaleX(1.01); opacity: 0.3; }
-      50% { transform: translate(1%, -2%) scaleX(0.99); opacity: 0.2; }
-      75% { transform: translate(-1%, -1%) scaleX(1.02); opacity: 0.35; }
-      100% { transform: translate(2%, 2%) scaleX(1); opacity: 0.25; }
-    }
-    @keyframes scanlines {
-      0% { background-position: 0 0; }
-      100% { background-position: 0 100px; }
-    }
-    @keyframes glitchColor {
-      0% { background-color: #ff6b6b; }
-      25% { background-color: #ff5a5a; }
-      50% { background-color: #ff7a7a; }
-      75% { background-color: #ee5a6f; }
-      100% { background-color: #ff6b6b; }
-    }
-    .hero-rectangle .glitch-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ff6b6b;
-      animation: glitchColor 10s ease-in-out infinite, glitchShift 10s ease-in-out infinite;
-    }
-    @keyframes glitchShift {
-      0% { transform: translate(0, 0); }
-      2% { transform: translate(-5px, 0); }
-      4% { transform: translate(5px, 0); }
-      6% { transform: translate(0, 0); }
-      25% { transform: translate(-2px, -2px); }
-      27% { transform: translate(4px, 0); }
-      29% { transform: translate(-2px, -2px); }
-      50% { transform: translate(2px, 0); }
-      52% { transform: translate(2px, 5px); }
-      54% { transform: translate(2px, 0); }
-      75% { transform: translate(-1px, 2px); }
-      77% { transform: translate(6px, 2px); }
-      79% { transform: translate(-1px, 2px); }
-      100% { transform: translate(0, 0); }
-    }
     .dark-mode .hero-rectangle { background-color: #e85555; }
-    .dark-mode .hero-rectangle .glitch-layer { background-color: #e85555; }
     
     .article-header { margin-bottom: 40px; }
-    .article-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; line-height: 1.2; }
+    .article-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; line-height: 1.2; color: #ff6b6b; }
+    .dark-mode .article-title { color: #e85555; }
     .article-meta { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    .article-content { margin-bottom: 40px; }
+    .article-content p { margin-bottom: 20px; }
+    .article-intro {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #ff6b6b;
+    }
+    .dark-mode .article-intro { color: #e0e0e0; border-color: #e85555; }
+    .article-intro .drop-cap {
+      float: left;
+      font-size: 48px;
+      line-height: 0.8;
+      font-weight: 700;
+      color: #ff6b6b;
+      margin-right: 8px;
+      margin-top: 4px;
+    }
+    .dark-mode .article-intro .drop-cap { color: #e85555; }
+    .article-intro .small-caps {
+      font-variant: small-caps;
+      text-transform: lowercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .article-content h2 { font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 12px; color: #ff6b6b; }
+    .dark-mode .article-content h2 { color: #e85555; }
+    .article-content a { color: #ff6b6b; text-decoration: underline; }
+    .dark-mode .article-content a { color: #e85555; }
     
     footer { margin-top: 80px; padding-top: 20px; border-top: 1px solid #ff6b6b; font-size: 12px; opacity: 0.7; }
     .dark-mode footer { border-color: #e85555; }
@@ -121,13 +82,27 @@
       </header>
       
       <div class="hero-rectangle">
-        <div class="glitch-layer"></div>
       </div>
       
       <article>
         <div class="article-header">
           <h1 class="article-title">An Introduction</h1>
           <div class="article-meta">December 16 · 2025</div>
+        </div>
+        
+        <div class="article-content">
+          <p>Hi,</p>
+          
+          <p class="article-intro"><span class="drop-cap">W</span><span class="small-caps">elcome to my website.</span> I'm a neuroscience graduate student, and I've created this space to write essays, share information, and review books and films. I post short-form content on X and publish longer-form writing here.</p>
+          
+          <h2>Essays</h2>
+          <p>Here, I write essays that explore topics such as science, politics, philosophy, music, health, and nutrition.</p>
+          
+          <h2>Information</h2>
+          <p>Each month, I publish an article titled <a href="words-things-ideas-december-2025.html">Words, Things, and Ideas</a>, where I share and explain words, things, and ideas I've recently encountered and found interesting or unfamiliar. Each entry typically consists of a list of ten items, followed by a short piece of writing that weaves them together.</p>
+          
+          <h2>Reviews</h2>
+          <p>I'm building a growing collection of book and movie reviews, updated monthly with the titles I've read or watched. At the moment, only some entries include reviews, but I'm in the process of adding them to all items. When a book or film resonates particularly strongly or sparks more extensive reflection, I may write a longer-form essay review.</p>
         </div>
       </article>
       
