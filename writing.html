@@ -89,6 +89,60 @@
     }
     .dark-mode .article-card-image { background-color: #e85555; }
     
+    .article-card-image.wti-style {
+      background: linear-gradient(135deg, #e85555 0%, #ff6b6b 50%, #e85555 100%);
+      flex-direction: column;
+      gap: 4px;
+    }
+    .article-card-image.wti-style::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.15;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .article-card-image.wti-style::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.1) 0px,
+        rgba(0,0,0,0.1) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 2;
+      pointer-events: none;
+    }
+    .wti-label {
+      position: relative;
+      z-index: 5;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fef6e4;
+      letter-spacing: 8px;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+    .wti-date {
+      position: relative;
+      z-index: 5;
+      font-size: 10px;
+      font-weight: 600;
+      color: #fef6e4;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    
     .article-card-hero-text {
       position: relative;
       z-index: 5;
@@ -155,9 +209,10 @@
     .dark-mode .article-card-hero-text { color: #1a1a1a; text-shadow: 1px 1px 0 #d4b08c, -1px -1px 0 #f0d4b8; }
     .dark-mode .article-card-hero-text::before, .dark-mode .article-card-hero-text::after { color: #1a1a1a; }
     
-    .article-card-content { padding: 16px; }
-    .article-card-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #ff6b6b; }
+    .article-card-content { padding: 16px; display: flex; flex-direction: column; height: 120px; }
+    .article-card-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #ff6b6b; flex-grow: 1; }
     .dark-mode .article-card-title { color: #e85555; }
+    .article-card-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
     .article-card-meta { font-size: 11px; text-transform: uppercase; opacity: 0.6; color: #ff6b6b; }
     .dark-mode .article-card-meta { color: #e85555; }
     .article-card-tag { 
@@ -167,7 +222,6 @@
       padding: 2px 6px; 
       border: 1px solid #ff6b6b;
       color: #ff6b6b;
-      margin-top: 8px;
     }
     .dark-mode .article-card-tag { border-color: #e85555; color: #e85555; }
     
@@ -225,7 +279,9 @@
           tag: "information",
           url: "words-things-ideas-december-2025.html",
           heroText: "",
-          heroImage: "https://i.imgur.com/ZlL5Ijc.jpeg"
+          heroImage: "",
+          isWTI: true,
+          wtiDate: "Dec 2025"
         },
         { 
           title: "An Introduction", 
@@ -278,19 +334,31 @@
           html += `<div class="year-label">${year}</div>`;
           html += '<div class="articles-grid">';
           filtered.forEach(article => {
-            const heroTextHtml = article.heroText 
-              ? `<span class="article-card-hero-text" data-text="${article.heroText}">${article.heroText}</span>` 
-              : '';
-            const imageStyle = article.heroImage 
-              ? `style="background-image: url('${article.heroImage}');"` 
-              : '';
+            let imageContent = '';
+            let imageClass = 'article-card-image';
+            let imageStyle = '';
+            
+            if (article.isWTI) {
+              imageClass += ' wti-style';
+              imageContent = `<span class="wti-label">WTI</span><span class="wti-date">${article.wtiDate}</span>`;
+            } else {
+              if (article.heroImage) {
+                imageStyle = `style="background-image: url('${article.heroImage}');"`;
+              }
+              if (article.heroText) {
+                imageContent = `<span class="article-card-hero-text" data-text="${article.heroText}">${article.heroText}</span>`;
+              }
+            }
+            
             html += `
               <a href="${article.url}" class="article-card">
-                <div class="article-card-image" ${imageStyle}>${heroTextHtml}</div>
+                <div class="${imageClass}" ${imageStyle}>${imageContent}</div>
                 <div class="article-card-content">
                   <div class="article-card-title">${article.title}</div>
-                  <div class="article-card-meta">${article.date} · ${year}</div>
-                  <div class="article-card-tag">${article.tag}</div>
+                  <div class="article-card-bottom">
+                    <div class="article-card-tag">${article.tag}</div>
+                    <div class="article-card-meta">${article.date} · ${year}</div>
+                  </div>
                 </div>
               </a>
             `;
